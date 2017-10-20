@@ -1,0 +1,5 @@
+cartoframes>=0.2.4b4
+Flask>=0.12.2
+pandas>=0.20.3
+scikit-learn>=0.19.0
+scipy>=0.19.1
