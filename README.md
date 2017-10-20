@@ -6,12 +6,12 @@
 $ git clone https://github.com/andy-esch/flask-cartoframes-app.git
 $ cd flask-cartoframes-app
 $ pip install -r requirements.txt
-$ python analysis_service
+$ python analysis_service.py
 ```
 
 This will point to `http://localhost:5000` which has the following endpoints:
 
-* [`/`](#identity) - will display the data in `table`
+* [`/`](#identity-) - will display the data in `table`
 * [`/kmeans`](#kmeans) - will do a naive k-means analysis of `cols` in `table`
 * [`/udf`](#udf) - user-defined Python function
 
@@ -54,7 +54,7 @@ The `udf` script needs to take into account that it will be operating on a DataF
 **Example**
 
 ```
-http://127.0.0.1:5000/udf?table=sim_pickups&user=eschbacher&key=7db1d0957a6f4a10c9ab8bd437ed6b3e28b3d960&col=n_pickups&udf=import%20numpy%20as%20np;%20np.random.seed();%20mean_val%20=%20df[col];%20df[%27sim_col%27]%20=%20np.random.poisson(mean_val,%20len(df))
+http://127.0.0.1:5000/udf?table=sim_pickups&user=eschbacher&key=abcdefg&col=n_pickups&udf=import%20numpy%20as%20np;%20np.random.seed();%20mean_val%20=%20df[col];%20df[%27sim_col%27]%20=%20np.random.poisson(mean_val,%20len(df))
 ```
 
 The result of this analysis is a new table written to the user's CARTO account with the results of the analysis.
