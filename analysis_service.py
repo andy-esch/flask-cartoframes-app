@@ -48,7 +48,7 @@ def udf():
     exec(func)
     out_table = table + '_analysis_service_output_udf'
     cc.write(df, out_table, overwrite=True)
-    out_url = cc.creds.base_url() + '/' + out_table
+    out_url = cc.creds.base_url() + '/dataset/' + out_table
     return json.dumps({
                 'result': {
                     'success': 'Results written to {}'.format(out_url)
