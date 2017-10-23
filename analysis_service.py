@@ -1,6 +1,5 @@
 from flask import Flask, request
 import cartoframes
-from sklearn.cluster import KMeans
 import json
 
 app = Flask(__name__)
@@ -35,7 +34,7 @@ def udf():
     key = request.args.get('key')
     table = request.args.get('table')
     # col is used within the user-defined function
-    col = request.args.get('col')
+    col = request.args.get('col') # noqa: variable used in user-defined script
     if not func:
         return json.dumps({
             'result': {
@@ -68,6 +67,8 @@ def kmeans():
         user (str): Username for CARTO account.
         key (str): User's CARTO API Key
     """
+    from sklearn.cluster import KMeans
+    from sklearn.preprocessing import StandardScaler
     n_clusters = int(request.args.get('n_clusters', 5))
     cols = request.args.get('cols').split(',')
     table = request.args.get('table')
@@ -85,7 +86,9 @@ def kmeans():
         SELECT *
           FROM {table}
     '''.format(table=table))
-    km = KMeans(n_clusters=n_clusters).fit(df[cols].values)
+    scaler = StandardScaler()
+    data = scaler.fit_transform(df[cols].values)
+    km = KMeans(n_clusters=n_clusters).fit(data)
     df['labels'] = km.labels_
     out_table = table + '_flask_app_output'
     cc.write(df, out_table, overwrite=True)
