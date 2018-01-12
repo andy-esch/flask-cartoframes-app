@@ -1,0 +1,11 @@
+<!doctype html>
+<title>cartoframes Analysis Service</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<div class=page>
+  <h1>cartoframes Analysis Service</h1>
+  <p>Table: <b><a href="{{ table_link }}">{{ table }}</a></b></p>
+  <p>{{ msg | safe }}</p>
+  <div id="plot" style="display: inline; float: left;">{{ plot | safe }}</div>
+  {{ map_html | safe }}
+  <!-- {% block body %}{% endblock %} -->
+</div>

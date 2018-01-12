@@ -1,0 +1,84 @@
+<h1 id="cartoframes-analysis-service">cartoframes Analysis Service</h1>
+
+<h2 id="getting-set-up">Getting set up</h2>
+
+<div class="codehilite"><pre><span></span><code>$ git clone https://github.com/andy-esch/flask-cartoframes-app.git
+$ <span class="nb">cd</span> flask-cartoframes-app
+$ pip install -r requirements.txt
+$ python analysis_service.py
+</code></pre></div>
+
+<p>This will point to <code>http://localhost:5000</code> which has the following endpoints:</p>
+
+<ul>
+<li><a href="#identity-">&lt;code&gt;/&lt;/code&gt;</a> - will display the data in <code>table</code></li>
+<li><a href="#kmeans">&lt;code&gt;/kmeans&lt;/code&gt;</a> - will do a naive k-means analysis of <code>cols</code> in <code>table</code></li>
+<li><a href="#udf">&lt;code&gt;/udf&lt;/code&gt;</a> - user-defined Python function</li>
+</ul>
+
+<h2 id="end-points">End Points</h2>
+
+<h3 id="kmeans">kmeans</h3>
+
+<p><strong>End point:</strong> <code>/kmeans</code></p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li><code>user</code> - CARTO username</li>
+<li><code>key</code> - CARTO API Key</li>
+<li><code>table</code> - name of table to display</li>
+<li><code>n_clusters</code> - number of clusters in the analysis</li>
+<li><code>cols</code> - comma-separated list of columns</li>
+</ul>
+
+<p><strong>Example:</strong></p>
+
+<pre><code>http://127.0.0.1:5000/kmeans?n_clusters=7&amp;cols=mag,depth&amp;table=all_month_3&amp;user=eschbacher&amp;key=abcdefg
+</code></pre>
+
+<p>The result of this analysis is a new table written to the user's CARTO account with the results of the analysis.</p>
+
+<a href="http://localhost:5000/kmeans?table=brooklyn_poverty&user=eschbacher&key=014d772edb09d56360256b9fce925f422ded2eef&cols=walked_to_work_2011_2015,pop_determined_poverty_status_2011_2015,commuters_16_over_2011_2015&format=html">Click here</a>
+
+<h3 id="udf">udf</h3>
+
+<p><strong>End point:</strong> <code>/udf</code></p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li><code>user</code> - CARTO username</li>
+<li><code>key</code> - CARTO API Key</li>
+<li><code>table</code> - source table</li>
+<li><code>col</code> - column to do the analysis on</li>
+<li><code>udf</code> - Python script to run</li>
+</ul>
+
+<p>The <code>udf</code> script needs to take into account that it will be operating on a DataFrame of <code>table</code>, so all the local variables will be available in the <code>udf</code> script. The outputs should be appended to the existing <code>df</code> DataFrame as new column names. The augmented DataFrame is then written to the CARTO account, and the new name is reported in the API response.</p>
+
+<p><strong>Example</strong></p>
+
+<pre><code>http://127.0.0.1:5000/udf?table=sim_pickups&amp;user=eschbacher&amp;key=abcdefg&amp;col=n_pickups&amp;udf=import%20numpy%20as%20np;%20np.random.seed();%20mean_val%20=%20df[col];%20df[%27sim_col%27]%20=%20np.random.poisson(mean_val,%20len(df))
+</code></pre>
+
+<p>The result of this analysis is a new table written to the user's CARTO account with the results of the analysis.</p>
+
+<h3 id="identity">identity (<code>/</code>)</h3>
+
+<p><strong>End point:</strong> <code>/</code></p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li><code>user</code> - CARTO username</li>
+<li><code>key</code> - CARTO API Key</li>
+<li><code>table</code> - name of table to display</li>
+</ul>
+
+<p><strong>Example:</strong></p>
+
+<pre><code>http://127.0.0.1:5000/?table=sim_pickups&amp;user=eschbacher&amp;key=abcdefg
+</code></pre>
+
+<p>JSON representation of the data in that table will be returned.</p>

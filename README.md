@@ -37,6 +37,8 @@ http://127.0.0.1:5000/kmeans?n_clusters=7&cols=mag,depth&table=all_month_3&user=
 
 The result of this analysis is a new table written to the user's CARTO account with the results of the analysis.
 
+![k-means output](img/kmeans-output.png)
+
 ### udf 
 
 **End point:** `/udf`
