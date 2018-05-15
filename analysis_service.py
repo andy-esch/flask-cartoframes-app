@@ -7,6 +7,7 @@ import warnings
 
 from flask import Flask, request, render_template
 import matplotlib.pylab as plt
+import pandas as pd
 import seaborn as sns
 import cartoframes
 
@@ -38,6 +39,31 @@ def identity():
         return dataframe.to_json()
     return json.dumps(
         {'error': 'HTML and JSON are the only supported formats'})
+
+# http://localhost:5000/hdfs?user=eschbacher&key=XXXXXX&table=leidos_flask_demo
+@app.route("/hdfs", methods=['GET'])
+def hdfs():
+    """read a table from hdfs and write to carto"""
+    username = request.args.get('user')
+    key = request.args.get('key')
+    table = request.args.get('table')
+
+    ccontext = cartoframes.CartoContext(
+        base_url='https://{}.carto.com/'.format(username),
+        api_key=key)
+
+    df = pd.DataFrame({
+        'a': [1, 2, 3],
+        'id': list('abc')
+        })
+
+    ccontext.write(df, table)
+
+    return json.dumps(
+        {'table': 'https://{username}.carto.com/dataset/{table}'.format(
+            username=username,
+            table=table
+        )})
 
 
 @app.route("/udf", methods=['GET'])
