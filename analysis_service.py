@@ -10,6 +10,10 @@ import matplotlib.pylab as plt
 import pandas as pd
 import seaborn as sns
 import cartoframes
+import requests
+
+session = requests.Session()
+session.verify = False
 
 app = Flask(__name__)
 
@@ -40,7 +44,7 @@ def identity():
     return json.dumps(
         {'error': 'HTML and JSON are the only supported formats'})
 
-# http://localhost:5000/hdfs?user=eschbacher&key=XXXXXX&table=leidos_flask_demo
+# http://0.0.0.0:5000/hdfs?user=eschbacher&key=XXXXXX&table=_flask_demo
 @app.route("/hdfs", methods=['GET'])
 def hdfs():
     """read a table from hdfs and write to carto"""
@@ -50,7 +54,9 @@ def hdfs():
 
     ccontext = cartoframes.CartoContext(
         base_url='https://{}.carto.com/'.format(username),
-        api_key=key)
+        api_key=key,
+        session=session)
+    print(ccontext.sql_client.send('select 10'))
 
     df = pd.DataFrame({
         'a': [1, 2, 3],
@@ -59,12 +65,12 @@ def hdfs():
 
     ccontext.write(df, table)
 
-    return json.dumps(
-        {'table': 'https://{username}.carto.com/dataset/{table}'.format(
+    return json.dumps({
+        'table': 'https://{username}.carto.com/dataset/{table}'.format(
             username=username,
             table=table
-        )})
-
+        )
+    })
 
 @app.route("/udf", methods=['GET'])
 def udf():
@@ -207,4 +213,4 @@ def debug_print(**kwargs):
         print('{0}: {1}'.format(k, kwargs[k]))
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0')
